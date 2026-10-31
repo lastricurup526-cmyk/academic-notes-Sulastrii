@@ -1,0 +1,517 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description"
+          content="Academic Notes - Personal Academic Space">
+
+    <title>Academic Notes | Personal Academic Space</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body data-page="dashboard">
+
+    <!-- =================================
+         HEADER
+    ================================== -->
+
+    <header class="main-header">
+        <div class="container header-content">
+
+            <a href="#" class="brand">
+                <div class="brand-logo">A.</div>
+
+                <div class="brand-text">
+                    <h2>academicnotes</h2>
+                    <span>PERSONAL ACADEMIC SPACE</span>
+                </div>
+            </a>
+
+            <nav class="navigation">
+                <div class="header-material-search" role="search">
+                    <input type="search" id="globalMaterialSearch" placeholder="Cari materi..." autocomplete="off" aria-label="Cari judul materi atau mata kuliah">
+                    <button type="button" id="globalMaterialSearchButton" class="material-search-submit" aria-label="Cari materi" title="Cari materi">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+                    </button>
+                    <kbd>Enter</kbd>
+                </div>
+                <div class="dashboard-menu-wrap workspace-menu-wrap">
+                    <button type="button" class="workspace-menu-trigger" id="dashboardMenuButton" aria-label="Buka menu" aria-expanded="false">⋮</button>
+                    <div class="workspace-menu" id="dashboardMenu" hidden>
+                        <button type="button" data-dashboard-action="home">Home</button>
+                        <button type="button" data-dashboard-action="toc">Daftar Materi</button>
+                        <button type="button" id="loginButton" class="login-button">Login Pemilik</button>
+                        <button type="button" id="visitorButton" class="visitor-button">Mode Pengunjung</button>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+
+    <main>
+
+        <!-- =================================
+             HERO / DASHBOARD COVER
+        ================================== -->
+
+        <section class="hero-section container">
+
+            <div class="hero-content">
+
+                <div class="section-label">
+                    <span></span>
+                    MY ACADEMIC JOURNAL
+                </div>
+                <p class="hero-kicker">A SPACE TO LEARN &amp; GROW</p>
+
+                <h1>
+                    Setiap ide
+                    <em>punya tempat.</em>
+                </h1>
+
+                <p>
+                    Ruang pribadi untuk merangkai pemikiran,
+                    menyimpan pengetahuan, dan mendokumentasikan
+                    perjalanan akademikmu.
+                </p>
+
+                <blockquote>
+                    "Menulis adalah cara kita memahami apa
+                    yang sedang kita pelajari."
+                </blockquote>
+
+                <a href="#learning-space" class="explore-link">
+                    Jelajahi ruang catatan ↗
+                </a>
+
+            </div>
+
+
+            <div class="hero-image">
+
+                <img
+                    src="assets/hero.jpg"
+                    alt="Academic Notes Cover"
+                    id="coverPreview"
+                >
+
+                <div class="hero-image-overlay">
+
+                    <button
+                        type="button"
+                        class="edit-cover-button owner-only"
+                        id="changeCoverButton">
+                        ✎ Ganti Sampul
+                    </button>
+
+                    <input
+                        type="file"
+                        id="coverUpload"
+                        accept="image/*"
+                        hidden
+                    >
+
+                    <span>FIELD NOTES</span>
+
+                    <h2>
+                        Learn. Reflect.
+                        Remember.
+                    </h2>
+
+                    <div class="image-footer">
+                        <span>A PERSONAL SPACE FOR GROWTH</span>
+                        <span>01 — 04</span>
+                    </div>
+
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- =================================
+             STUDENT PROFILE
+        ================================== -->
+
+        <section class="profile-section container">
+
+            <div class="section-heading">
+                <span>01</span>
+                <h2>STUDENT PROFILE</h2>
+            </div>
+
+            <div class="profile-card">
+
+                <div class="profile-photo">
+
+                    <img
+                        src="assets/profile.jpg"
+                        alt="Foto Profil Mahasiswa"
+                        id="profilePreview"
+                    >
+
+                    <button
+                        type="button"
+                        class="photo-edit-button owner-only"
+                        id="changeProfilePhoto">
+                        Ganti Foto
+                    </button>
+
+                    <input
+                        type="file"
+                        id="profileUpload"
+                        accept="image/*"
+                        hidden
+                    >
+
+                </div>
+
+
+                <div class="profile-information">
+
+                    <div class="profile-top">
+
+                        <span class="profile-label">
+                            YOUR IDENTITY
+                        </span>
+
+                        <button
+                            type="button"
+                            class="edit-profile-button owner-only"
+                            id="editProfileButton">
+                            ✎ Edit Profil
+                        </button>
+
+                    </div>
+
+
+                    <h2 id="studentName">
+                        Sulastri Nengseh
+                    </h2>
+
+                    <p class="student-nim" id="studentNim">
+                        202405010
+                    </p>
+
+
+                    <div class="student-details">
+
+                        <div class="detail-item">
+                            <span>PROGRAM STUDI</span>
+
+                            <strong id="studentProgram">
+                                Akuntansi
+                            </strong>
+                        </div>
+
+
+                        <div class="detail-item">
+                            <span>FAKULTAS</span>
+
+                            <strong id="studentFaculty">
+                                Ekonomi, Bisnis Dan Hukum
+                            </strong>
+                        </div>
+
+
+                        <div class="detail-item">
+                            <span>UNIVERSITAS</span>
+
+                            <strong id="studentUniversity">
+                                Universitas Pat Petulai
+                            </strong>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================
+             MY LEARNING SPACE
+        ================================== -->
+
+        <section
+            class="learning-section container"
+            id="learning-space">
+
+            <div class="section-heading">
+                <span>02</span>
+                <h2>MY LEARNING SPACE</h2>
+            </div>
+
+
+            <div class="learning-header">
+
+                <h2>Mata Kuliah</h2>
+
+                <p>
+                    Ruang untuk mengorganisasi seluruh catatan
+                    dan materi perkuliahan.
+                </p>
+
+            </div>
+
+
+            <!-- DAFTAR MATA KULIAH -->
+
+            <div class="subject-toolbar" hidden></div>
+            <div class="subject-list" id="subjectList">
+                <p class="subject-loading">Memuat ruang mata kuliah...</p>
+            </div>
+
+        </section>
+
+        <section class="dashboard-global-toc container" id="dashboardGlobalToc">
+            <div class="section-heading"><span>03</span><h2>DAFTAR MATERI</h2></div>
+            <p class="dashboard-toc-intro">Semua materi dari setiap mata kuliah tersusun otomatis di sini.</p>
+            <div id="dashboardGlobalTocList" class="global-toc-list"><p class="subject-loading">Memuat daftar materi...</p></div>
+        </section>
+
+
+
+
+    </main>
+
+
+    <!-- =================================
+         EDIT PROFILE MODAL
+    ================================== -->
+
+    <div class="modal" id="profileModal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <div>
+                    <span class="profile-label">
+                        PERSONAL INFORMATION
+                    </span>
+
+                    <h2>Edit Profil Mahasiswa</h2>
+                </div>
+
+                <button
+                    type="button"
+                    class="close-modal"
+                    id="closeProfileModal">
+                    ×
+                </button>
+
+            </div>
+
+
+            <form id="profileForm">
+
+                <label for="editName">
+                    Nama Mahasiswa
+                </label>
+
+                <input
+                    type="text"
+                    id="editName"
+                    required
+                >
+
+
+                <label for="editNim">
+                    NIM
+                </label>
+
+                <input
+                    type="text"
+                    id="editNim"
+                    required
+                >
+
+
+                <label for="editProgram">
+                    Program Studi
+                </label>
+
+                <input
+                    type="text"
+                    id="editProgram"
+                    required
+                >
+
+
+                <label for="editFaculty">
+                    Fakultas
+                </label>
+
+                <input
+                    type="text"
+                    id="editFaculty"
+                    required
+                >
+
+
+                <label for="editUniversity">
+                    Universitas
+                </label>
+
+                <input
+                    type="text"
+                    id="editUniversity"
+                    required
+                >
+
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        id="cancelProfileEdit">
+                        Batal
+                    </button>
+
+                    <button type="submit">
+                        Simpan Perubahan
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+
+    <section id="notesWorkspace" class="notes-workspace" hidden>
+
+<main class="notes-shell">
+<section class="notes-heading"><div><span class="notes-overline">MY LEARNING SPACE</span><h1 id="subjectHeading">Ruang Catatan</h1><p id="subjectDescription">Catatan dan materi perkuliahan tersusun dalam satu tempat.</p></div><button id="addNoteButton" class="primary-action owner-only">＋ Tambah Catatan</button></section>
+<section id="noteEditorPanel" class="note-editor-panel" hidden><div class="editor-heading"><div><span class="notes-overline">NOTE EDITOR</span><h2 id="editorHeading">Buat Catatan Baru</h2></div><button id="closeEditor" class="editor-close" aria-label="Tutup editor">×</button></div>
+<label class="field-label" for="noteTitle">Judul materi</label><input id="noteTitle" class="note-title-input" maxlength="180" placeholder="Contoh: Konsep Dasar Akuntansi Keuangan">
+<div class="note-cover-editor"><div><label class="field-label" for="noteCoverInput">Sampul materi (opsional)</label><p class="cover-help">Gunakan gambar berbeda agar setiap materi mudah dikenali.</p><input type="file" id="noteCoverInput" accept="image/jpeg,image/png,image/webp"></div><img id="noteCoverPreview" alt="Pratinjau sampul materi" hidden></div>
+<div class="editor-structure-hint"><strong>Format materi:</strong> gunakan heading untuk merapikan isi catatan. Daftar Materi di dashboard hanya menampilkan judul catatan.</div>
+<div class="editor-toolbar" role="toolbar" aria-label="Pemformatan teks"><select id="fontFamily" aria-label="Jenis huruf"><option value="Arial">Arial</option><option value="Georgia">Georgia</option><option value="Times New Roman">Times New Roman</option><option value="Verdana">Verdana</option></select><select id="fontSize" aria-label="Ukuran huruf"><option value="2">Kecil</option><option value="3" selected>Normal</option><option value="4">Besar</option><option value="5">Sangat besar</option><option value="6">Judul</option></select><button data-cmd="bold" title="Tebal"><b>B</b></button><button data-cmd="italic" title="Miring"><i>I</i></button><button data-cmd="underline" title="Garis bawah"><u>U</u></button><input type="color" id="textColor" value="#263c33" title="Warna teks"><span class="toolbar-divider"></span><button data-cmd="justifyLeft" title="Rata kiri">≡</button><button data-cmd="justifyCenter" title="Rata tengah">☰</button><button data-cmd="justifyRight" title="Rata kanan">≣</button><button data-cmd="insertUnorderedList" title="Daftar poin">• List</button><button data-cmd="insertOrderedList" title="Daftar nomor">1. List</button><select id="blockFormat" aria-label="Format paragraf"><option value="P">Paragraf</option><option value="H2">Heading 2</option><option value="H3">Heading 3</option><option value="BLOCKQUOTE">Kutipan</option></select><button id="insertImageButton" type="button" title="Sisipkan gambar">＋ Gambar</button><input type="file" id="noteImageInput" accept="image/jpeg,image/png,image/webp" hidden></div>
+<div id="noteContent" class="note-content" contenteditable="true" spellcheck="true" data-placeholder="Mulai tulis materi. Gunakan Heading 2 untuk submateri dan Heading 3 untuk rincian pembahasan..."></div>
+<section class="reference-editor-panel">
+  <div class="reference-editor-heading"><div><span class="notes-overline">REFERENCE MANAGER</span><h3>Referensi untuk Materi Ini</h3><p>Tambahkan sumber, lalu sisipkan sitasi ke dalam tulisan. Daftar pustaka dibuat otomatis.</p></div><button type="button" id="toggleReferenceForm" class="secondary-action">＋ Tambah Referensi</button></div>
+  <form id="referenceForm" class="reference-form" hidden>
+    <div class="reference-mode-tabs"><label><input type="radio" name="referenceMode" value="metadata" checked> Artikel / Jurnal / Buku / Sumber web</label><label><input type="radio" name="referenceMode" value="file"> Upload PDF / Word / PPT</label></div>
+    <div id="referenceMetadataFields" class="reference-metadata-fields">
+      <label class="field-label" for="refType">Jenis referensi</label><select id="refType" class="reference-input"><option value="journal">Jurnal</option><option value="article">Artikel</option><option value="book">Buku</option><option value="other">Sumber lainnya</option></select>
+      <label class="field-label" for="refTitle">Judul sumber</label><input id="refTitle" class="reference-input" placeholder="Judul artikel, jurnal, atau buku">
+      <div class="reference-meta-grid"><div><label class="field-label" for="refAuthors">Penulis</label><input id="refAuthors" class="reference-input" placeholder="Nama penulis"></div><div><label class="field-label" for="refYear">Tahun</label><input id="refYear" class="reference-input" inputmode="numeric" placeholder="2026"></div></div>
+      <label class="field-label" for="refPublication">Nama jurnal / penerbit</label><input id="refPublication" class="reference-input" placeholder="Nama jurnal atau penerbit">
+      <label class="field-label" for="refExternalUrl">URL / DOI (opsional)</label><input id="refExternalUrl" class="reference-input" type="url" placeholder="https:// atau DOI">
+      <label class="field-label" for="refDescription">Keterangan (opsional)</label><textarea id="refDescription" class="reference-input" rows="2" placeholder="Catatan singkat tentang sumber"></textarea>
+    </div>
+    <div id="referenceFileFields" hidden><div class="file-upload-intro"><span class="file-upload-symbol">↥</span><div><strong>Tambahkan dokumen langsung</strong><p>Pilih PDF, Word, atau PowerPoint. Nama file otomatis menjadi judul referensi.</p></div></div>
+    <label class="reference-file-picker" for="refFile"><span>＋ Pilih File Dokumen</span><small>PDF · DOC · DOCX · PPT · PPTX</small><input id="refFile" type="file" accept=".pdf,.doc,.docx,.ppt,.pptx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"></label>
+    <p id="refFileSelection" class="ref-file-selection">Belum ada file dipilih.</p></div>
+    <div class="reference-form-actions"><button type="button" id="cancelReferenceForm" class="secondary-action">Batal</button><button type="submit" class="primary-action" id="saveReferenceButton">Simpan Referensi</button></div>
+    <p class="upload-limit-note">Ukuran maksimum mengikuti batas penyimpanan proyek Supabase. Untuk file besar, unggahan menggunakan transfer bertahap agar lebih stabil.</p>
+  </form>
+  <div id="noteReferencesList" class="note-references-list"><p class="reference-empty">Belum ada referensi untuk materi ini.</p></div>
+</section>
+<div class="editor-footer"><span id="saveStatus">Catatan belum disimpan</span><div><button id="saveDraftButton" class="secondary-action">Simpan Draft</button><button id="publishNoteButton" class="primary-action">Publikasikan</button></div></div></section>
+<section class="notes-content-grid"><div class="notes-main-column"><div class="notes-list-header" id="notesListHeader"><div><span class="notes-overline">YOUR NOTES</span><h2>Daftar Catatan</h2></div><span id="noteCount" class="note-count">0 catatan</span></div><div id="notesList" class="notes-list"><p class="empty-notes">Memuat catatan...</p></div><article id="noteReader" class="note-reader" hidden><div class="reader-topline"><button id="backToNotes" class="reader-back">← Kembali ke daftar catatan</button><div class="reader-owner-actions" id="readerOwnerActions" hidden><button type="button" id="readerEditNote">Edit Catatan</button><button type="button" id="readerDeleteNote" class="danger-menu-item">Hapus Catatan</button></div></div><div class="reader-meta" id="readerMeta"></div><h1 id="readerTitle"></h1><div class="reader-quick-links"><button type="button" id="readerBibliographyJump" hidden>Daftar Pustaka ↓</button></div><img id="readerCover" class="reader-cover" alt="Sampul materi" hidden><div id="readerBody" class="reader-body"></div><section id="readerBibliography" class="reader-bibliography" hidden><h2>Daftar Pustaka</h2><ol id="readerBibliographyList"></ol></section></article></div><aside class="notes-sidebar"><div class="toc-card"><span class="notes-overline">ON THIS PAGE</span><h3>Daftar Isi</h3><p class="toc-caption">Terbentuk otomatis dari heading catatan yang dipublikasikan.</p><ol id="autoToc"><li class="toc-empty">Belum ada heading.</li></ol></div><div class="workspace-note"><span>✳</span><p>Catatan yang dipublikasikan dapat dibaca pengunjung. Draft hanya terlihat oleh pemilik.</p></div></aside></section></main>
+<div id="globalTocModal" class="global-toc-modal" hidden>
+  <div class="global-toc-dialog" role="dialog" aria-modal="true" aria-labelledby="globalTocTitle">
+    <div class="global-toc-dialog-header"><div><span class="notes-overline">ACADEMIC INDEX</span><h2 id="globalTocTitle">Daftar Materi</h2><p>Judul catatan dari semua mata kuliah tersusun di satu tempat.</p></div><button type="button" id="closeGlobalToc" class="editor-close" aria-label="Tutup daftar isi">×</button></div>
+    <div id="globalTocList" class="global-toc-list"><p class="subject-loading">Memuat daftar materi...</p></div>
+  </div>
+</div>
+
+<div id="filePreviewModal" class="file-preview-modal" hidden><div class="file-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="filePreviewTitle"><div class="file-preview-header"><div><span class="notes-overline">DOCUMENT PREVIEW</span><h2 id="filePreviewTitle">Pratinjau Dokumen</h2></div><button type="button" id="closeFilePreview" class="editor-close" aria-label="Tutup pratinjau">×</button></div><div id="filePreviewBody" class="file-preview-body"></div><div class="file-preview-footer"><a id="filePreviewOpen" class="secondary-action" target="_blank" rel="noopener">Buka di tab baru</a><a id="filePreviewDownload" class="primary-action" download>Unduh File</a></div></div></div>
+<div id="notice" class="notice" role="status" aria-live="polite"></div>
+
+    </section>
+
+    <!-- OWNER LOGIN MODAL -->
+    <div class="modal login-modal" id="loginModal" aria-hidden="true">
+        <div class="login-modal-content" role="dialog" aria-modal="true" aria-labelledby="loginTitle">
+            <aside class="login-visual">
+                <div class="login-visual-brand"><span class="login-monogram">A.</span><span>ACADEMIC NOTES</span></div>
+                <div class="login-visual-copy">
+                    <span class="login-eyebrow">YOUR PRIVATE ACADEMIC SPACE</span>
+                    <h2>Ideas grow<br><em>when you give</em><br>them a place.</h2>
+                    <p>Kelola catatan, materi, dan perjalanan akademikmu dalam satu ruang.</p>
+                </div>
+                <div class="login-visual-footer"><span>LEARN · REFLECT · REMEMBER</span><span>01 / OWNER ACCESS</span></div>
+            </aside>
+
+            <section class="login-panel">
+                <button type="button" class="login-close" id="closeLoginModal" aria-label="Tutup">×</button>
+                <div class="login-panel-heading">
+                    <span class="login-kicker">WELCOME BACK</span>
+                    <h2 id="loginTitle">Masuk sebagai<br><em>pemilik.</em></h2>
+                    <p>Gunakan akun pemilik untuk mengelola Academic Notes.</p>
+                </div>
+
+                <form id="loginForm">
+                    <div class="login-field">
+                        <label for="loginEmail">EMAIL</label>
+                        <input type="email" id="loginEmail" placeholder="nama@email.com" autocomplete="username" required>
+                    </div>
+                    <div class="login-field">
+                        <label for="loginPassword">PASSWORD</label>
+                        <input type="password" id="loginPassword" placeholder="Masukkan password" autocomplete="current-password" required>
+                    </div>
+                    <p class="login-hint">Akses ini khusus untuk pemilik website.</p>
+                    <p id="loginMessage" class="login-message" role="status" aria-live="polite"></p>
+                    <button class="login-submit" type="submit"><span>Masuk ke Dashboard</span><span aria-hidden="true">↗</span></button>
+                    <button class="login-cancel" type="button" id="cancelLogin">Kembali ke website</button>
+                </form>
+                <div class="login-panel-bottom"><span>ACADEMIC NOTES</span><span>PERSONAL ACADEMIC SPACE</span></div>
+            </section>
+        </div>
+    </div>
+
+    <div class="modal" id="subjectModal" aria-hidden="true">
+        <div class="modal-content subject-modal-content">
+            <div class="modal-header"><div><span class="profile-label">LEARNING SPACE</span><h2>Tambah Mata Kuliah</h2></div><button type="button" class="close-modal" id="closeSubjectModal">×</button></div>
+            <form id="subjectForm">
+                <label for="subjectTitle">Nama Mata Kuliah</label><input id="subjectTitle" type="text" maxlength="120" required placeholder="Contoh: Akuntansi Keuangan Lanjutan">
+                <label for="subjectDescription">Deskripsi singkat</label><textarea id="subjectDescription" rows="3" placeholder="Catatan dan materi perkuliahan..."></textarea>
+                <div class="modal-actions"><button type="button" id="cancelSubject">Batal</button><button type="submit">Simpan Mata Kuliah</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- =================================
+         FOOTER
+    ================================== -->
+
+    <footer class="main-footer">
+
+        <div class="container">
+
+            <h2>ACADEMIC NOTES</h2>
+
+            <p>
+                A personal space to learn, reflect, and grow.
+            </p>
+
+            <span>
+                © 2026 Academic Notes
+            </span>
+
+        </div>
+
+    </footer>
+
+
+    <!-- JAVASCRIPT -->
+
+    <script type="module" src="script.js"></script>
+
+</body>
+</html>
