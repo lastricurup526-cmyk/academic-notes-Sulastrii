@@ -5,17 +5,324 @@ function setOwnerMode(on){document.body.classList.toggle('owner-mode',on);$('log
 function showModal(el){el.classList.add('active');el.setAttribute('aria-hidden','false');}
 function hideModal(el){el.classList.remove('active');el.setAttribute('aria-hidden','true');}
 function showLogin(){loginMessage.textContent='';showModal(loginModal);}
-async function verifyOwner(){const {data:{session}}=await supabase.auth.getSession();if(!session){setOwnerMode(false);return false;}const {data,error}=await supabase.rpc('is_site_owner');if(error||data!==true){await supabase.auth.signOut();setOwnerMode(false);return false;}setOwnerMode(true);await loadProfile();return true;}
-$('loginButton').addEventListener('click',async()=>{const {data:{session}}=await supabase.auth.getSession();if(session&&document.body.classList.contains('owner-mode')){await supabase.auth.signOut();setOwnerMode(false);await loadSubjects();}else showLogin();});
-$('visitorButton').addEventListener('click',async()=>{await supabase.auth.signOut();setOwnerMode(false);hideModal(loginModal);await loadSubjects();window.scrollTo({top:0,behavior:'smooth'});});
-$('closeLoginModal').addEventListener('click',()=>hideModal(loginModal));$('cancelLogin').addEventListener('click',()=>hideModal(loginModal));loginModal.addEventListener('click',e=>{if(e.target===loginModal)hideModal(loginModal);});
-loginForm.addEventListener('submit',async e=>{e.preventDefault();const b=loginForm.querySelector('[type=submit]');b.disabled=true;loginMessage.textContent='Memeriksa akun...';const {error}=await supabase.auth.signInWithPassword({email:$('loginEmail').value.trim(),password:$('loginPassword').value});if(error){loginMessage.textContent='Login gagal. Periksa email dan password.';b.disabled=false;return;}const ok=await verifyOwner();b.disabled=false;if(!ok){loginMessage.textContent='Akun ini tidak terdaftar sebagai pemilik Academic Notes.';return;}hideModal(loginModal);loginForm.reset();await loadSubjects();});
-function openProfile(){$('editName').value=$('studentName').textContent.trim();$('editNim').value=$('studentNim').textContent.trim();$('editProgram').value=$('studentProgram').textContent.trim();$('editFaculty').value=$('studentFaculty').textContent.trim();$('editUniversity').value=$('studentUniversity').textContent.trim();showModal(profileModal);}
-$('editProfileButton').addEventListener('click',openProfile);$('closeProfileModal').addEventListener('click',()=>hideModal(profileModal));$('cancelProfileEdit').addEventListener('click',()=>hideModal(profileModal));profileModal.addEventListener('click',e=>{if(e.target===profileModal)hideModal(profileModal);});
-$('profileForm').addEventListener('submit',async e=>{e.preventDefault();if(!document.body.classList.contains('owner-mode'))return alert('Login sebagai pemilik terlebih dahulu.');const {data:{user}}=await supabase.auth.getUser();if(!user)return alert('Sesi login berakhir.');const row={id:user.id,full_name:$('editName').value.trim(),nim:$('editNim').value.trim(),study_program:$('editProgram').value.trim(),faculty:$('editFaculty').value.trim(),university:$('editUniversity').value.trim(),updated_at:new Date().toISOString()};const {error}=await supabase.from('profiles').upsert(row);if(error)return alert('Profil belum tersimpan: '+error.message);$('studentName').textContent=row.full_name;$('studentNim').textContent=row.nim;$('studentProgram').textContent=row.study_program;$('studentFaculty').textContent=row.faculty;$('studentUniversity').textContent=row.university;hideModal(profileModal);alert('Profil berhasil disimpan.');});
-async function loadProfile(){const {data:{user}}=await supabase.auth.getUser();if(!user)return;const {data,error}=await supabase.from('profiles').select('*').eq('id',user.id).maybeSingle();if(error||!data)return;if(data.full_name)$('studentName').textContent=data.full_name;if(data.nim)$('studentNim').textContent=data.nim;if(data.study_program)$('studentProgram').textContent=data.study_program;if(data.faculty)$('studentFaculty').textContent=data.faculty;if(data.university)$('studentUniversity').textContent=data.university;for(const [bucket,path,img] of [['profile-images',data.avatar_path,'profilePreview'],['cover-images',data.cover_path,'coverPreview']])if(path){const {data:u}=supabase.storage.from(bucket).getPublicUrl(path);$(img).src=u.publicUrl;}}
-async function uploadImage(file,bucket,previewId,column){if(!file)return;if(!document.body.classList.contains('owner-mode'))return alert('Login sebagai pemilik terlebih dahulu.');if(!['image/jpeg','image/png','image/webp'].includes(file.type))return alert('Gunakan JPG, PNG, atau WEBP.');if(file.size>5*1024*1024)return alert('Ukuran maksimal 5 MB.');const {data:{user}}=await supabase.auth.getUser();if(!user)return alert('Sesi login tidak ditemukan.');const ext=file.name.split('.').pop().toLowerCase(),path=`${user.id}/${Date.now()}.${ext}`;const {error:upErr}=await supabase.storage.from(bucket).upload(path,file,{contentType:file.type});if(upErr)return alert('Upload gagal: '+upErr.message);const {error}=await supabase.from('profiles').upsert({id:user.id,[column]:path,updated_at:new Date().toISOString()});if(error)return alert('Gambar terunggah, tetapi profil gagal diperbarui: '+error.message);const {data:u}=supabase.storage.from(bucket).getPublicUrl(path);$(previewId).src=u.publicUrl;alert('Gambar berhasil diunggah.');}
-$('changeProfilePhoto').addEventListener('click',()=>$('profileUpload').click());$('profileUpload').addEventListener('change',e=>uploadImage(e.target.files[0],'profile-images','profilePreview','avatar_path'));$('changeCoverButton').addEventListener('click',()=>$('coverUpload').click());$('coverUpload').addEventListener('change',e=>uploadImage(e.target.files[0],'cover-images','coverPreview','cover_path'));
+async function verifyOwner(){
+  const {data:{session}}=await supabase.auth.getSession();
+
+  if(!session){
+    setOwnerMode(false);
+    return false;
+  }
+
+  const {data,error}=await supabase.rpc('is_site_owner');
+
+  if(error||data!==true){
+    await supabase.auth.signOut();
+    setOwnerMode(false);
+    return false;
+  }
+
+  setOwnerMode(true);
+  await loadProfile();
+  return true;
+}
+
+async function loadPublicProfile(){
+  const {data,error}=await supabase
+    .from('public_site_profile')
+    .select('full_name,study_program,faculty,university,avatar_path,cover_path')
+    .limit(1)
+    .maybeSingle();
+
+  if(error){
+    console.error('Profil publik gagal dimuat:',error);
+    return;
+  }
+
+  if(!data)return;
+
+  if(data.full_name)$('studentName').textContent=data.full_name;
+  if(data.study_program)$('studentProgram').textContent=data.study_program;
+  if(data.faculty)$('studentFaculty').textContent=data.faculty;
+  if(data.university)$('studentUniversity').textContent=data.university;
+
+  if(data.avatar_path){
+    const {data:url}=supabase.storage
+      .from('profile-images')
+      .getPublicUrl(data.avatar_path);
+
+    $('profilePreview').src=url.publicUrl;
+  }
+
+  if(data.cover_path){
+    const {data:url}=supabase.storage
+      .from('cover-images')
+      .getPublicUrl(data.cover_path);
+
+    $('coverPreview').src=url.publicUrl;
+  }
+}
+
+async function loadProfile(){
+  const {data:{user}}=await supabase.auth.getUser();
+  if(!user)return;
+
+  const {data,error}=await supabase
+    .from('profiles')
+    .select('full_name,nim,study_program,faculty,university')
+    .eq('id',user.id)
+    .maybeSingle();
+
+  if(error){
+    console.error('Profil pemilik gagal dimuat:',error);
+    return;
+  }
+
+  if(data){
+    if(data.full_name)$('studentName').textContent=data.full_name;
+    if(data.nim)$('studentNim').textContent=data.nim;
+    if(data.study_program)$('studentProgram').textContent=data.study_program;
+    if(data.faculty)$('studentFaculty').textContent=data.faculty;
+    if(data.university)$('studentUniversity').textContent=data.university;
+  }
+
+  await loadPublicProfile();
+}
+
+async function savePublicProfile(row){
+  const {data:{user}}=await supabase.auth.getUser();
+  if(!user)throw new Error('Sesi pemilik tidak ditemukan.');
+
+  const {data:existing,error:readError}=await supabase
+    .from('public_site_profile')
+    .select('avatar_path,cover_path')
+    .eq('id',user.id)
+    .maybeSingle();
+
+  if(readError)throw readError;
+
+  const publicRow={
+    id:user.id,
+    full_name:row.full_name,
+    study_program:row.study_program,
+    faculty:row.faculty,
+    university:row.university,
+    avatar_path:existing?.avatar_path||null,
+    cover_path:existing?.cover_path||null,
+    updated_at:new Date().toISOString()
+  };
+
+  const {error}=await supabase
+    .from('public_site_profile')
+    .upsert(publicRow);
+
+  if(error)throw error;
+}
+
+function openProfile(){
+  $('editName').value=$('studentName').textContent.trim();
+  $('editNim').value=$('studentNim').textContent.trim();
+  $('editProgram').value=$('studentProgram').textContent.trim();
+  $('editFaculty').value=$('studentFaculty').textContent.trim();
+  $('editUniversity').value=$('studentUniversity').textContent.trim();
+  showModal(profileModal);
+}
+
+$('editProfileButton').addEventListener('click',openProfile);
+$('closeProfileModal').addEventListener('click',()=>hideModal(profileModal));
+$('cancelProfileEdit').addEventListener('click',()=>hideModal(profileModal));
+
+profileModal.addEventListener('click',e=>{
+  if(e.target===profileModal)hideModal(profileModal);
+});
+
+$('profileForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+
+  if(!document.body.classList.contains('owner-mode'))
+    return alert('Login sebagai pemilik terlebih dahulu.');
+
+  const {data:{user}}=await supabase.auth.getUser();
+  if(!user)return alert('Sesi login berakhir.');
+
+  const row={
+    id:user.id,
+    full_name:$('editName').value.trim(),
+    nim:$('editNim').value.trim(),
+    study_program:$('editProgram').value.trim(),
+    faculty:$('editFaculty').value.trim(),
+    university:$('editUniversity').value.trim(),
+    updated_at:new Date().toISOString()
+  };
+
+  const {error}=await supabase.from('profiles').upsert(row);
+
+  if(error)return alert('Profil belum tersimpan: '+error.message);
+
+  try{
+    await savePublicProfile(row);
+  }catch(error){
+    return alert('Profil tersimpan, tetapi data publik gagal diperbarui: '+error.message);
+  }
+
+  await loadProfile();
+  hideModal(profileModal);
+  alert('Profil berhasil disimpan.');
+});
+
+async function uploadImage(file,bucket,previewId,column){
+  if(!file)return;
+
+  if(!document.body.classList.contains('owner-mode'))
+    return alert('Login sebagai pemilik terlebih dahulu.');
+
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type))
+    return alert('Gunakan JPG, PNG, atau WEBP.');
+
+  if(file.size>5*1024*1024)
+    return alert('Ukuran maksimal 5 MB.');
+
+  const {data:{user}}=await supabase.auth.getUser();
+  if(!user)return alert('Sesi login tidak ditemukan.');
+
+  const ext=file.name.split('.').pop().toLowerCase();
+  const path=`${user.id}/${Date.now()}.${ext}`;
+
+  const {error:uploadError}=await supabase.storage
+    .from(bucket)
+    .upload(path,file,{contentType:file.type});
+
+  if(uploadError)
+    return alert('Upload gagal: '+uploadError.message);
+
+  const {error:profileError}=await supabase
+    .from('profiles')
+    .upsert({
+      id:user.id,
+      [column]:path,
+      updated_at:new Date().toISOString()
+    });
+
+  if(profileError)
+    return alert('Gambar terunggah, tetapi profil gagal diperbarui: '+profileError.message);
+
+  const {data:existing}=await supabase
+    .from('public_site_profile')
+    .select('full_name,study_program,faculty,university,avatar_path,cover_path')
+    .eq('id',user.id)
+    .maybeSingle();
+
+  const publicRow={
+    id:user.id,
+    full_name:existing?.full_name||$('studentName').textContent.trim(),
+    study_program:existing?.study_program||$('studentProgram').textContent.trim(),
+    faculty:existing?.faculty||$('studentFaculty').textContent.trim(),
+    university:existing?.university||$('studentUniversity').textContent.trim(),
+    avatar_path:existing?.avatar_path||null,
+    cover_path:existing?.cover_path||null,
+    updated_at:new Date().toISOString()
+  };
+
+  publicRow[column]=path;
+
+  const {error:publicError}=await supabase
+    .from('public_site_profile')
+    .upsert(publicRow);
+
+  if(publicError)
+    return alert('Gambar tersimpan, tetapi data publik gagal diperbarui: '+publicError.message);
+
+  const {data:url}=supabase.storage.from(bucket).getPublicUrl(path);
+  $(previewId).src=url.publicUrl;
+
+  alert('Gambar berhasil diunggah dan disimpan.');
+}
+
+$('changeProfilePhoto').addEventListener('click',()=>$('profileUpload').click());
+
+$('profileUpload').addEventListener('change',async e=>{
+  await uploadImage(
+    e.target.files[0],
+    'profile-images',
+    'profilePreview',
+    'avatar_path'
+  );
+  e.target.value='';
+});
+
+$('changeCoverButton').addEventListener('click',()=>$('coverUpload').click());
+
+$('coverUpload').addEventListener('change',async e=>{
+  await uploadImage(
+    e.target.files[0],
+    'cover-images',
+    'coverPreview',
+    'cover_path'
+  );
+  e.target.value='';
+});
+
+$('loginButton').addEventListener('click',async()=>{
+  const {data:{session}}=await supabase.auth.getSession();
+
+  if(session&&document.body.classList.contains('owner-mode')){
+    await supabase.auth.signOut();
+    setOwnerMode(false);
+    await loadPublicProfile();
+    await loadSubjects();
+  }else{
+    showLogin();
+  }
+});
+
+$('visitorButton').addEventListener('click',async()=>{
+  await supabase.auth.signOut();
+  setOwnerMode(false);
+  hideModal(loginModal);
+  await loadPublicProfile();
+  await loadSubjects();
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+$('closeLoginModal').addEventListener('click',()=>hideModal(loginModal));
+$('cancelLogin').addEventListener('click',()=>hideModal(loginModal));
+
+loginModal.addEventListener('click',e=>{
+  if(e.target===loginModal)hideModal(loginModal);
+});
+
+loginForm.addEventListener('submit',async e=>{
+  e.preventDefault();
+
+  const button=loginForm.querySelector('[type=submit]');
+  button.disabled=true;
+  loginMessage.textContent='Memeriksa akun...';
+
+  const {error}=await supabase.auth.signInWithPassword({
+    email:$('loginEmail').value.trim(),
+    password:$('loginPassword').value
+  });
+
+  if(error){
+    loginMessage.textContent='Login gagal. Periksa email dan password.';
+    button.disabled=false;
+    return;
+  }
+
+  const ok=await verifyOwner();
+  button.disabled=false;
+
+  if(!ok){
+    loginMessage.textContent='Akun ini tidak terdaftar sebagai pemilik Academic Notes.';
+    return;
+  }
+
+  hideModal(loginModal);
+  loginForm.reset();
+  await verifyOwner();
+await loadPublicProfile();
+await loadSubjects();
+});
+
 async function loadSubjects(){
   const isOwner=document.body.classList.contains('owner-mode');
   const courseTitle='Akuntansi Keuangan Lanjutan';
