@@ -723,8 +723,11 @@ function restoreRoute(){
   else setView('dashboard');
 }
 window.addEventListener('popstate',restoreRoute);
-// Inisialisasi data dan pulihkan rute saat halaman dibuka atau dimuat ulang.
+
+// Inisialisasi data dan pulihkan rute saat halaman dibuka.
 await verifyOwner();
+await loadPublicProfile();
 await loadSubjects();
 await loadGlobalToc();
 restoreRoute();
+
