@@ -1,4 +1,3 @@
-
 /* =================================
    1. GLOBAL SETTINGS
 ================================= */
@@ -1409,3 +1408,64 @@ body.owner-mode .owner-only {
 .material-search-submit:hover,.material-search-submit:focus-visible{background:#e9eee7;color:#344b3d;outline:none}
 .material-search-submit svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
 .header-material-search kbd{white-space:nowrap}
+
+/* Daftar isi berada setelah seluruh isi materi, bukan di sidebar. */
+.reader-toc-card{margin-top:30px;max-width:100%;}
+.reader-toc-card .toc-caption{margin-top:8px;}
+.reader-toc-card ol{margin-bottom:0;}
+
+
+/* ===== Revisi: panel informasi di bagian paling bawah workspace ===== */
+.notes-content-grid{grid-template-columns:minmax(0,1fr);}
+.notes-sidebar{display:none!important;}
+.workspace-note-bottom{width:100%;margin:28px 0 0;padding:24px 28px;display:flex;align-items:flex-start;gap:18px;}
+.workspace-note-bottom>span{font-size:25px;line-height:1.2;flex:none;}
+.workspace-note-bottom p{margin:0;font-size:14px;line-height:1.8;}
+.reader-toc-card{margin-top:34px;max-width:100%;}
+
+/* Penggaris dan kontrol paragraf ala Word */
+.word-ruler-panel{border:1px solid #ddd9ce;border-top:0;background:#f8f7f2;padding:13px 15px 15px;}
+.word-ruler-heading{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px;color:#35443e;font:12px 'DM Sans',sans-serif;}
+.word-ruler-heading strong{font-weight:700;}
+.word-ruler-heading span{color:#858d84;font-size:11px;}
+.word-ruler{height:28px;display:flex;align-items:flex-end;justify-content:space-between;padding:0 5px 4px;border-bottom:1px solid #aab3a8;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(10% - 1px),#b9c1b7 calc(10% - 1px),#b9c1b7 10%);color:#7b847b;font:10px 'DM Sans',sans-serif;}
+.word-ruler span{position:relative;background:#f8f7f2;padding:0 2px;}
+.word-ruler .ruler-end{font-size:9px;color:#526b5b;}
+.paragraph-controls{display:grid;grid-template-columns:repeat(3,minmax(120px,1fr)) repeat(2,minmax(130px,1fr)) auto;gap:10px;align-items:end;margin-top:13px;}
+.paragraph-controls label{display:grid;gap:5px;color:#68756b;font:10px 'DM Sans',sans-serif;}
+.paragraph-controls input[type=range]{width:100%;accent-color:#526b5b;}
+.paragraph-controls output{font-size:10px;color:#35443e;}
+.paragraph-controls select{height:32px;border:1px solid #ddd9ce;background:#fffefa;color:#35443e;padding:0 7px;font:11px 'DM Sans',sans-serif;}
+.paragraph-controls button{padding:8px 10px;font-size:10px;white-space:nowrap;}
+@media(max-width:900px){.paragraph-controls{grid-template-columns:repeat(2,minmax(130px,1fr));}.paragraph-controls button{width:100%;}}
+@media(max-width:520px){.word-ruler-panel{padding:11px 9px;}.paragraph-controls{grid-template-columns:1fr 1fr;gap:9px;}.word-ruler{font-size:8px;}.workspace-note-bottom{padding:18px;}}
+
+
+/* Aksi langsung untuk membuka setiap materi dari Daftar Materi dashboard. */
+.global-toc-item{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.global-toc-item-title{flex:1 1 220px;min-width:0;color:#35443e;font:500 14px 'DM Sans',sans-serif;line-height:1.55}
+.global-toc-open{flex:0 0 auto;border:1px solid #718875;border-radius:999px;background:transparent;color:#526b58;padding:7px 13px;font:600 12px 'DM Sans',sans-serif;cursor:pointer;white-space:nowrap}
+.global-toc-open:hover{background:#718875;color:#fff}
+@media(max-width:600px){.global-toc-open{margin-left:auto}}
+
+/* Memastikan menu titik tiga berada di atas elemen lainnya */
+.main-header {
+    position: relative;
+    z-index: 100;
+}
+
+.workspace-menu-wrap {
+    position: relative;
+    z-index: 101;
+}
+
+.workspace-menu {
+    z-index: 102;
+    pointer-events: auto;
+}
+
+.workspace-menu button {
+    position: relative;
+    z-index: 103;
+    pointer-events: auto;
+}
