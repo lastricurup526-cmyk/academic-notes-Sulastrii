@@ -305,6 +305,10 @@
                     maxlength="180"
                     placeholder="Contoh: Konsep Dasar Akuntansi Keuangan">
 
+                <label class="field-label meeting-label" for="noteMeeting">Teks setelah judul</label>
+                <input id="noteMeeting" class="note-meeting-input" maxlength="80"
+                    placeholder="Contoh: Pertemuan Pertama">
+
                 <div class="note-cover-editor">
                     <div>
                         <label class="field-label" for="noteCoverInput">
@@ -519,6 +523,9 @@
                         </div>
 
                         <div id="referenceFileFields" hidden>
+                            <label class="field-label" for="refFileTitle">Nama dokumen</label>
+                            <input id="refFileTitle" class="reference-input" maxlength="250"
+                                placeholder="Nama dokumen yang ditampilkan">
                             <div class="file-upload-intro">
                                 <span class="file-upload-symbol">↥</span>
                                 <div>
@@ -609,6 +616,7 @@
 
                         <div class="reader-meta" id="readerMeta"></div>
                         <h1 id="readerTitle"></h1>
+                        <p id="readerMeeting" class="reader-meeting" hidden></p>
 
                         <div class="reader-quick-links">
                             <button type="button" id="readerBibliographyJump" hidden>

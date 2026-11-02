@@ -1469,3 +1469,109 @@ body.owner-mode .owner-only {
     z-index: 103;
     pointer-events: auto;
 }
+
+/* RESPONSIVE ARTICLE LAYOUT: batas halaman dan margin baca laptop/ponsel */
+.notes-shell{
+  width:min(1180px, calc(100% - 64px));
+  max-width:1180px;
+  margin-left:auto;
+  margin-right:auto;
+  box-sizing:border-box;
+}
+.notes-main-column,.notes-content-grid,.note-reader,.note-editor-panel,
+.reader-body,.note-content{min-width:0;max-width:100%;box-sizing:border-box}
+.note-reader{
+  width:100%;
+  padding:clamp(20px,3.2vw,42px);
+  overflow:hidden;
+}
+.reader-body{
+  width:100%;
+  max-width:980px;
+  margin:0 auto;
+  overflow-wrap:anywhere;
+  word-break:normal;
+  line-height:1.85;
+}
+.reader-body p,.reader-body li,.reader-body blockquote{
+  max-width:100%;
+  overflow-wrap:anywhere;
+}
+.reader-body img,.reader-body video,.reader-body iframe,.reader-body figure{
+  max-width:100% !important;
+  box-sizing:border-box;
+}
+.reader-body img{
+  height:auto !important;
+  object-fit:contain !important;
+  display:block;
+  margin:18px auto;
+}
+.reader-cover{
+  width:100%;
+  height:auto !important;
+  max-height:none !important;
+  object-fit:contain !important;
+  display:block;
+}
+.reader-body table{
+  display:block;
+  width:100%;
+  max-width:100%;
+  overflow-x:auto;
+  border-collapse:collapse;
+}
+.reader-body pre,.reader-body code{
+  max-width:100%;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.note-content{
+  width:100%;
+  overflow-wrap:anywhere;
+}
+.note-content img{max-width:100% !important;height:auto !important;object-fit:contain}
+.document-more-menu button[data-edit-reference],
+.bibliography-edit-button{
+  border:0;
+  background:transparent;
+  display:block;
+  width:100%;
+  padding:10px 14px;
+  color:#35443e;
+  text-align:left;
+  font:500 13px 'DM Sans',sans-serif;
+  cursor:pointer;
+}
+.document-more-menu button[data-edit-reference]:hover,
+.bibliography-edit-button:hover{background:#f0f2ec}
+.bibliography-edit-button{
+  display:inline-block;
+  width:auto;
+  margin:7px 0 0 8px;
+  padding:5px 10px;
+  border:1px solid #d8d6cb;
+  border-radius:3px;
+}
+@media(max-width:800px){
+  .notes-shell{width:calc(100% - 36px);margin-top:24px}
+  .note-reader{padding:22px}
+}
+@media(max-width:600px){
+  .notes-shell{width:calc(100% - 24px);margin:18px auto 48px}
+  .note-reader{padding:16px 14px}
+  .reader-body{font-size:15px;line-height:1.75}
+  .reader-body img{margin:14px auto}
+  .note-content{padding:18px 14px;font-size:15px}
+  .reader-cover{border-radius:3px}
+}
+@media(max-width:380px){
+  .notes-shell{width:calc(100% - 18px)}
+  .note-reader{padding:12px 10px}
+}
+
+/* Label pertemuan tepat di bawah judul materi */
+.meeting-label { display:block; margin-top:14px; }
+.note-meeting-input { width:100%; max-width:100%; box-sizing:border-box; }
+.reader-meeting { margin:10px 0 22px; color:#718875; font:600 14px/1.5 'DM Sans',sans-serif; letter-spacing:.04em; }
+.reader-meeting[hidden] { display:none !important; }
