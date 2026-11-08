@@ -24,22 +24,6 @@
             </a>
 
             <nav class="navigation">
-                <div class="header-material-search" role="search">
-                    <input type="search" id="globalMaterialSearch"
-                        placeholder="Cari materi..." autocomplete="off"
-                        aria-label="Cari judul materi atau mata kuliah">
-
-                    <button type="button" id="globalMaterialSearchButton"
-                        class="material-search-submit" aria-label="Cari materi"
-                        title="Cari materi">
-                        <svg viewBox="0 0 24 24" aria-hidden="true">
-                            <circle cx="10.8" cy="10.8" r="6.8"></circle>
-                            <path d="m16 16 5 5"></path>
-                        </svg>
-                    </button>
-                    <kbd>Enter</kbd>
-                </div>
-
                 <!-- MENU TITIK TIGA: HANYA SATU -->
                 <div class="dashboard-menu-wrap workspace-menu-wrap">
                     <button type="button"
@@ -50,7 +34,6 @@
 
                     <div class="workspace-menu" id="dashboardMenu" hidden>
                         <button type="button" data-dashboard-action="home">Home</button>
-                        <button type="button" data-dashboard-action="toc">Daftar Materi</button>
                         <button type="button" id="loginButton" class="login-button">Login Pemilik</button>
                         <button type="button" id="visitorButton" class="visitor-button">Mode Pengunjung</button>
                     </div>
@@ -187,18 +170,17 @@
             </div>
         </section>
 
-        <!-- MY LEARNING SPACE -->
+        <!-- MELIHAT CATATAN -->
         <section class="learning-section container" id="learning-space">
             <div class="section-heading">
                 <span>02</span>
-                <h2>MY LEARNING SPACE</h2>
+                <h2>MELIHAT CATATAN</h2>
             </div>
 
             <div class="learning-header">
-                <h2>Mata Kuliah</h2>
+                <h2>Pilih Mata Kuliah</h2>
                 <p>
-                    Ruang untuk mengorganisasi seluruh catatan
-                    dan materi perkuliahan.
+                    Pilih mata kuliah untuk melihat catatan dan materi perkuliahan.
                 </p>
             </div>
 
@@ -211,25 +193,7 @@
             </div>
         </section>
 
-        <!-- DAFTAR MATERI -->
-        <section class="dashboard-global-toc container"
-            id="dashboardGlobalToc">
 
-            <div class="section-heading">
-                <span>03</span>
-                <h2>DAFTAR MATERI</h2>
-            </div>
-
-            <p class="dashboard-toc-intro">
-                Semua materi dari setiap mata kuliah tersusun otomatis di sini.
-            </p>
-
-            <div id="dashboardGlobalTocList" class="global-toc-list">
-                <p class="subject-loading">
-                    Memuat daftar materi...
-                </p>
-            </div>
-        </section>
 
     </main>
 
@@ -598,9 +562,7 @@
 
                     <article id="noteReader" class="note-reader" hidden>
                         <div class="reader-topline">
-                            <button id="backToNotes" class="reader-back">
-                                ← Kembali ke daftar catatan
-                            </button>
+                            <button id="backToNotes" class="reader-close" aria-label="Tutup catatan" title="Tutup catatan">×</button>
 
                             <div class="reader-owner-actions"
                                 id="readerOwnerActions" hidden>
@@ -614,8 +576,11 @@
                             </div>
                         </div>
 
-                        <div class="reader-meta" id="readerMeta"></div>
-                        <h1 id="readerTitle"></h1>
+                        <div class="reader-modal-heading"> 
+                            <span class="reader-kicker">Catatan kuliah</span>
+                            <div class="reader-meta" id="readerMeta"></div>
+                            <h1 id="readerTitle"></h1>
+                        </div>
                         <p id="readerMeeting" class="reader-meeting" hidden></p>
 
                         <div class="reader-quick-links">

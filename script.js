@@ -343,7 +343,7 @@ async function loadSubjects(){
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 if($('addSubjectButton'))$('addSubjectButton').addEventListener('click',()=>notify('Academic Notes saat ini difokuskan pada mata kuliah Akuntansi Keuangan Lanjutan.'));$('closeSubjectModal').addEventListener('click',()=>hideModal(subjectModal));$('cancelSubject').addEventListener('click',()=>hideModal(subjectModal));subjectModal.addEventListener('click',e=>{if(e.target===subjectModal)hideModal(subjectModal);});
 $('subjectForm').addEventListener('submit',e=>{e.preventDefault();notify('Website ini difokuskan pada satu mata kuliah: Akuntansi Keuangan Lanjutan.');});
-supabase.auth.onAuthStateChange(async(_event,session)=>{if(!session){setOwnerMode(false);await loadSubjects();await loadGlobalToc();}else{await loadSubjects();await loadGlobalToc();}});
+supabase.auth.onAuthStateChange(async(_event,session)=>{if(!session){setOwnerMode(false);await loadSubjects();}else{await loadSubjects();}});
 
 
 // ===== RUANG CATATAN (HALAMAN KEDUA DALAM WEBSITE YANG SAMA) =====
@@ -396,10 +396,10 @@ async function initNotes(id){
   $n('subjectDescription').textContent=subject.description||'Catatan dan materi perkuliahan tersusun dalam satu tempat.';
   await loadNotes();
 }
-async function loadNotes(){let q=supabase.from('notes').select('id,title,excerpt,status,published_at,updated_at,created_at,cover_path').eq('subject_id',subjectId).order('updated_at',{ascending:false});if(!isOwner)q=q.eq('status','published');const {data,error}=await q;if(error){$n('notesList').innerHTML='<p class="empty-notes">Catatan belum dapat dimuat.</p>';console.error(error);return;}const notes=data||[];$n('noteCount').textContent=`${notes.length} catatan`;$n('notesList').innerHTML=notes.length?notes.map(n=>`<article class="note-card">${n.cover_path?`<img class="note-card-cover" src="${safeText(supabase.storage.from('note-images').getPublicUrl(n.cover_path).data.publicUrl)}" alt="Sampul ${safeText(n.title)}">`:''}<div class="note-card-information"><span class="note-card-meta">${n.status==='draft'?'DRAFT':'PUBLISHED'} · ${new Date(n.updated_at||n.created_at).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</span><h3>${safeText(n.title||'Tanpa judul')}</h3><p>${safeText(n.excerpt||'Buka untuk membaca catatan lengkap.')}</p></div><div class="note-card-actions"><button class="open-note" data-open="${n.id}">Buka ↗</button>${isOwner?`<button type="button" data-edit="${n.id}">Edit</button><button type="button" class="delete-note-button" data-delete-note="${n.id}">Hapus</button>`:''}</div></article>`).join(''):`<p class="empty-notes">${isOwner?'Belum ada catatan. Klik “Tambah Catatan” untuk mulai menulis.':'Belum ada catatan yang dipublikasikan.'}</p>`;}
-async function deleteNote(id){if(!isOwner||!currentUser)return notify('Login pemilik diperlukan.');const confirmed=window.confirm('Hapus catatan ini? Referensi akademik akan tetap disimpan.');if(!confirmed)return;const {data:images}=await supabase.from('note_images').select('storage_path').eq('note_id',id);const imagePaths=(images||[]).map(x=>x.storage_path).filter(Boolean);if(imagePaths.length){const {error:imageError}=await supabase.storage.from('note-images').remove(imagePaths);if(imageError)console.warn('Gambar catatan belum berhasil dibersihkan:',imageError.message);}const {error}=await supabase.from('notes').delete().eq('id',id);if(error){notify('Catatan gagal dihapus: '+error.message);console.error(error);return;}if(currentNoteId===id){currentNoteId=null;$n('noteEditorPanel').hidden=true;}if(currentReaderNoteId===id){currentReaderNoteId=null;$n('noteReader').hidden=true;$n('notesList').hidden=false;$n('notesListHeader')?.classList.remove('hidden');}$n('readerOwnerActions').hidden=true;notify('Catatan berhasil dihapus.');await loadNotes();await loadGlobalToc();}
+async function loadNotes(){let q=supabase.from('notes').select('id,title,status,updated_at,created_at,meeting_label').eq('subject_id',subjectId).order('created_at',{ascending:true}).order('updated_at',{ascending:true});if(!isOwner)q=q.eq('status','published');const {data,error}=await q;if(error){$n('notesList').innerHTML='<p class="empty-notes">Catatan belum dapat dimuat.</p>';console.error(error);return;}const notes=data||[];$n('noteCount').textContent=`${notes.length} catatan`;$n('notesList').innerHTML=notes.length?notes.map(n=>`<article class="note-card note-card-compact"><div class="note-card-information"><h3>${safeText(n.title||'Tanpa judul')}</h3>${n.meeting_label?`<p class="note-card-meeting">${safeText(n.meeting_label)}</p>`:''}</div><div class="note-card-actions"><button class="open-note" data-open="${n.id}">Buka ↗</button>${isOwner?`<button type="button" data-edit="${n.id}">Edit</button><button type="button" class="delete-note-button" data-delete-note="${n.id}">Hapus</button>`:''}</div></article>`).join(''):`<p class="empty-notes">${isOwner?'Belum ada catatan. Klik “Tambah Catatan” untuk mulai menulis.':'Belum ada catatan yang dipublikasikan.'}</p>`;}
+async function deleteNote(id){if(!isOwner||!currentUser)return notify('Login pemilik diperlukan.');const confirmed=window.confirm('Hapus catatan ini? Referensi akademik akan tetap disimpan.');if(!confirmed)return;const {data:images}=await supabase.from('note_images').select('storage_path').eq('note_id',id);const imagePaths=(images||[]).map(x=>x.storage_path).filter(Boolean);if(imagePaths.length){const {error:imageError}=await supabase.storage.from('note-images').remove(imagePaths);if(imageError)console.warn('Gambar catatan belum berhasil dibersihkan:',imageError.message);}const {error}=await supabase.from('notes').delete().eq('id',id);if(error){notify('Catatan gagal dihapus: '+error.message);console.error(error);return;}if(currentNoteId===id){currentNoteId=null;$n('noteEditorPanel').hidden=true;}if(currentReaderNoteId===id){currentReaderNoteId=null;$n('noteReader').hidden=true;document.body.classList.remove('reader-open');$n('notesList').hidden=false;$n('notesListHeader')?.classList.remove('hidden');}$n('readerOwnerActions').hidden=true;notify('Catatan berhasil dihapus.');await loadNotes();}
 $n('notesList').addEventListener('click',e=>{const open=e.target.closest('[data-open]'),edit=e.target.closest('[data-edit]'),del=e.target.closest('[data-delete-note]');if(open)openNote(open.dataset.open);else if(edit)editNote(edit.dataset.edit);else if(del)deleteNote(del.dataset.deleteNote);});
-function openEditor(note=null){if(currentReaderNoteId)$n('noteReader').hidden=true;currentNoteId=note?.id||null;currentNoteStatus=note?.status||'draft';$n('editorHeading').textContent=note?'Edit Catatan':'Buat Catatan Baru';$n('noteTitle').value=note?.title||'';$n('noteMeeting').value=note?.meeting_label||'';$n('noteContent').innerHTML=note?.content_html||'';currentCoverPath=note?.cover_path||null;originalCoverPath=currentCoverPath;$n('noteCoverInput').value='';if(currentCoverPath){$n('noteCoverPreview').src=supabase.storage.from('note-images').getPublicUrl(currentCoverPath).data.publicUrl;$n('noteCoverPreview').hidden=false;}else{$n('noteCoverPreview').removeAttribute('src');$n('noteCoverPreview').hidden=true;}$n('saveStatus').textContent=note?'Mengedit catatan tersimpan':'Catatan belum disimpan';$n('referenceForm').hidden=true;$n('noteEditorPanel').hidden=false;$n('noteEditorPanel').scrollIntoView({behavior:'smooth',block:'start'});$n('noteTitle').focus();if(currentNoteId)loadNoteReferences();else $n('noteReferencesList').innerHTML='<p class="reference-empty">Simpan draft terlebih dahulu saat menambahkan referensi.</p>';}
+function openEditor(note=null){if(currentReaderNoteId){$n('noteReader').hidden=true;document.body.classList.remove('reader-open');}currentNoteId=note?.id||null;currentNoteStatus=note?.status||'draft';$n('editorHeading').textContent=note?'Edit Catatan':'Buat Catatan Baru';$n('noteTitle').value=note?.title||'';$n('noteMeeting').value=note?.meeting_label||'';$n('noteContent').innerHTML=note?.content_html||'';currentCoverPath=note?.cover_path||null;originalCoverPath=currentCoverPath;$n('noteCoverInput').value='';if(currentCoverPath){$n('noteCoverPreview').src=supabase.storage.from('note-images').getPublicUrl(currentCoverPath).data.publicUrl;$n('noteCoverPreview').hidden=false;}else{$n('noteCoverPreview').removeAttribute('src');$n('noteCoverPreview').hidden=true;}$n('saveStatus').textContent=note?'Mengedit catatan tersimpan':'Catatan belum disimpan';$n('referenceForm').hidden=true;$n('noteEditorPanel').hidden=false;$n('noteEditorPanel').scrollIntoView({behavior:'smooth',block:'start'});$n('noteTitle').focus();if(currentNoteId)loadNoteReferences();else $n('noteReferencesList').innerHTML='<p class="reference-empty">Simpan draft terlebih dahulu saat menambahkan referensi.</p>';}
 $n('addNoteButton').addEventListener('click',()=>{if(!isOwner)return notify('Login pemilik diperlukan.');currentReaderNoteId=null;openEditor();});$n('closeEditor').addEventListener('click',()=>{$n('noteEditorPanel').hidden=true;if(currentReaderNoteId){openNote(currentReaderNoteId);}else{$n('notesList').hidden=false;$n('notesListHeader')?.classList.remove('hidden');}});
 document.querySelectorAll('[data-cmd]').forEach(b=>b.addEventListener('click',()=>{ $n('noteContent').focus();document.execCommand(b.dataset.cmd,false,null);}));$n('fontFamily').addEventListener('change',e=>{ $n('noteContent').focus();document.execCommand('fontName',false,e.target.value);});$n('fontSize').addEventListener('change',e=>{ $n('noteContent').focus();document.execCommand('fontSize',false,e.target.value);});$n('textColor').addEventListener('input',e=>{ $n('noteContent').focus();document.execCommand('foreColor',false,e.target.value);});$n('blockFormat').addEventListener('change',e=>{ $n('noteContent').focus();document.execCommand('formatBlock',false,e.target.value);});
 // Pengaturan paragraf bergaya Word: inden kiri/kanan, inden baris pertama, dan spasi.
@@ -411,10 +411,10 @@ $n('applyParagraphSettings').addEventListener('click',applyParagraphSettings);
 $n('noteCoverInput').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type))return notify('Sampul harus JPG, PNG, atau WEBP.');if(file.size>5*1024*1024)return notify('Ukuran sampul maksimal 5 MB.');if(!isOwner||!currentUser)return notify('Login pemilik diperlukan.');const ext=file.name.split('.').pop().toLowerCase();const path=`${currentUser.id}/covers/${Date.now()}.${ext}`;const {error}=await supabase.storage.from('note-images').upload(path,file,{contentType:file.type,upsert:false});if(error)return notify('Sampul gagal diunggah: '+error.message);const oldPath=currentCoverPath;currentCoverPath=path;const {data}=supabase.storage.from('note-images').getPublicUrl(path);$n('noteCoverPreview').src=data.publicUrl;$n('noteCoverPreview').hidden=false;notify('Sampul materi berhasil dipilih. Simpan catatan untuk menerapkan perubahan.');});
 $n('insertImageButton').addEventListener('click',()=>{if(!isOwner)return notify('Login pemilik diperlukan.');$n('noteImageInput').click();});$n('noteImageInput').addEventListener('change',async e=>{const file=e.target.files[0];if(!file)return;if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>5*1024*1024){notify('Gambar harus JPG, PNG, atau WEBP maksimal 5 MB.');e.target.value='';return;}const path=`${currentUser.id}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;const {error}=await supabase.storage.from('note-images').upload(path,file,{contentType:file.type});if(error){notify('Upload gambar gagal: '+error.message);return;}const {data}=supabase.storage.from('note-images').getPublicUrl(path);$n('noteContent').focus();document.execCommand('insertImage',false,data.publicUrl);e.target.value='';});
 function makeExcerpt(html){const d=new DOMParser().parseFromString(html,'text/html');return (d.body.textContent||'').trim().slice(0,220);}
-async function saveNote(status,options={}){if(!isOwner||!currentUser)return notify('Login pemilik diperlukan.');const title=$n('noteTitle').value.trim(),raw=$n('noteContent').innerHTML.trim();if(!title)return notify('Isi judul materi terlebih dahulu.');if(!options.allowEmpty&&(!raw||raw==='<br>'))return notify('Isi materi sebelum menyimpan.');const clean=DOMPurify.sanitize(raw||'',{USE_PROFILES:{html:true},ADD_TAGS:['img'],ADD_ATTR:['style','class','src','alt','width','height']});const meetingLabel=$n('noteMeeting').value.trim();const row={owner_id:currentUser.id,subject_id:subjectId,title,meeting_label:meetingLabel||null,excerpt:makeExcerpt(clean),content_html:clean,content_json:null,cover_path:currentCoverPath,status,published_at:status==='published'?new Date().toISOString():null,updated_at:new Date().toISOString()};let result;if(currentNoteId)result=await supabase.from('notes').update(row).eq('id',currentNoteId).select('id').single();else result=await supabase.from('notes').insert(row).select('id').single();if(result.error){notify('Catatan gagal disimpan: '+result.error.message);console.error(result.error);return false;}currentNoteId=result.data.id;currentNoteStatus=status;if(originalCoverPath&&originalCoverPath!==currentCoverPath){const {error:oldCoverError}=await supabase.storage.from('note-images').remove([originalCoverPath]);if(oldCoverError)console.warn('Sampul lama belum terhapus:',oldCoverError.message);}originalCoverPath=currentCoverPath;const {error:refError}=await supabase.from('academic_references').update({is_public:status==='published'}).eq('note_id',currentNoteId);if(refError)console.warn('Status publik referensi belum diperbarui:',refError);$n('saveStatus').textContent=status==='published'?'Berhasil dipublikasikan':'Draft tersimpan';if(!options.silent)notify(status==='published'?'Materi berhasil dipublikasikan.':'Draft berhasil disimpan.');await loadNotes();await loadNoteReferences();await loadGlobalToc();if(status==='published')await renderToc(clean);return true;}
+async function saveNote(status,options={}){if(!isOwner||!currentUser)return notify('Login pemilik diperlukan.');const title=$n('noteTitle').value.trim(),raw=$n('noteContent').innerHTML.trim();if(!title)return notify('Isi judul materi terlebih dahulu.');if(!options.allowEmpty&&(!raw||raw==='<br>'))return notify('Isi materi sebelum menyimpan.');const clean=DOMPurify.sanitize(raw||'',{USE_PROFILES:{html:true},ADD_TAGS:['img'],ADD_ATTR:['style','class','src','alt','width','height']});const meetingLabel=$n('noteMeeting').value.trim();const row={owner_id:currentUser.id,subject_id:subjectId,title,meeting_label:meetingLabel||null,excerpt:makeExcerpt(clean),content_html:clean,content_json:null,cover_path:currentCoverPath,status,published_at:status==='published'?new Date().toISOString():null,updated_at:new Date().toISOString()};let result;if(currentNoteId)result=await supabase.from('notes').update(row).eq('id',currentNoteId).select('id').single();else result=await supabase.from('notes').insert(row).select('id').single();if(result.error){notify('Catatan gagal disimpan: '+result.error.message);console.error(result.error);return false;}currentNoteId=result.data.id;currentNoteStatus=status;if(originalCoverPath&&originalCoverPath!==currentCoverPath){const {error:oldCoverError}=await supabase.storage.from('note-images').remove([originalCoverPath]);if(oldCoverError)console.warn('Sampul lama belum terhapus:',oldCoverError.message);}originalCoverPath=currentCoverPath;const {error:refError}=await supabase.from('academic_references').update({is_public:status==='published'}).eq('note_id',currentNoteId);if(refError)console.warn('Status publik referensi belum diperbarui:',refError);$n('saveStatus').textContent=status==='published'?'Berhasil dipublikasikan':'Draft tersimpan';if(!options.silent)notify(status==='published'?'Materi berhasil dipublikasikan.':'Draft berhasil disimpan.');await loadNotes();await loadNoteReferences();if(status==='published')await renderToc(clean);return true;}
 $n('saveDraftButton').addEventListener('click',()=>saveNote('draft'));$n('publishNoteButton').addEventListener('click',()=>saveNote('published'));
 async function editNote(id){const {data,error}=await supabase.from('notes').select('*').eq('id',id).single();if(error)return notify('Catatan tidak dapat dibuka: '+error.message);openEditor(data);}
-async function openNote(id){$n('noteEditorPanel').hidden=true;const {data,error}=await supabase.from('notes').select('id,title,meeting_label,content_html,status,published_at,updated_at,cover_path').eq('id',id).single();if(error)return notify('Catatan tidak dapat dibuka.');if(!isOwner&&data.status!=='published')return notify('Catatan ini belum dipublikasikan.');currentReaderNoteId=id;$n('readerOwnerActions').hidden=!isOwner;$n('readerBibliographyJump').hidden=true;$n('notesList').hidden=true;$n('notesListHeader')?.classList.add('hidden');$n('noteReader').hidden=false;$n('readerMeta').textContent=`${data.status==='published'?'DIPUBLIKASIKAN':'DRAFT'} · ${new Date(data.published_at||data.updated_at).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}`;$n('readerTitle').textContent=data.title;const meeting=$n('readerMeeting');meeting.textContent=data.meeting_label||'';meeting.hidden=!data.meeting_label;if(data.cover_path){$n('readerCover').src=supabase.storage.from('note-images').getPublicUrl(data.cover_path).data.publicUrl;$n('readerCover').hidden=false;}else{$n('readerCover').hidden=true;$n('readerCover').removeAttribute('src');}$n('readerBody').innerHTML=DOMPurify.sanitize(data.content_html||'');await renderToc(data.content_html||'');await renderBibliography(id);$n('noteReader').scrollIntoView({behavior:'smooth',block:'start'});}
+async function openNote(id){$n('noteEditorPanel').hidden=true;const {data,error}=await supabase.from('notes').select('id,title,meeting_label,content_html,status,published_at,updated_at,cover_path').eq('id',id).single();if(error)return notify('Catatan tidak dapat dibuka.');if(!isOwner&&data.status!=='published')return notify('Catatan ini belum dipublikasikan.');currentReaderNoteId=id;$n('readerOwnerActions').hidden=!isOwner;$n('readerBibliographyJump').hidden=true;$n('notesList').hidden=true;$n('notesListHeader')?.classList.add('hidden');$n('noteReader').hidden=false;document.body.classList.add('reader-open');$n('readerMeta').textContent=`${data.status==='published'?'DIPUBLIKASIKAN':'DRAFT'} · ${new Date(data.published_at||data.updated_at).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}`;$n('readerTitle').textContent=data.title;const meeting=$n('readerMeeting');meeting.textContent=data.meeting_label||'';meeting.hidden=!data.meeting_label;if(data.cover_path){$n('readerCover').src=supabase.storage.from('note-images').getPublicUrl(data.cover_path).data.publicUrl;$n('readerCover').hidden=false;}else{$n('readerCover').hidden=true;$n('readerCover').removeAttribute('src');}$n('readerBody').innerHTML=DOMPurify.sanitize(data.content_html||'');await renderToc(data.content_html||'');await renderBibliography(id);$n('noteReader').scrollIntoView({behavior:'smooth',block:'start'});}
 async function renderBibliography(noteId){
   let q=supabase.from('academic_references').select('id,title,reference_type,authors,publication,year,description,external_url,file_path,is_public').eq('note_id',noteId).order('created_at');
   if(!isOwner)q=q.eq('is_public',true);
@@ -446,7 +446,18 @@ $n('readerBibliographyList').addEventListener('click',async e=>{
   const edit=e.target.closest('[data-edit-bibliography]');
   if(edit)await startReferenceEdit(edit.dataset.editBibliography);
 });
-$n('backToNotes').addEventListener('click',()=>{currentReaderNoteId=null;$n('noteReader').hidden=true;$n('notesList').hidden=false;$n('notesListHeader')?.classList.remove('hidden');});
+function closeNoteReader(){
+  currentReaderNoteId=null;
+  $n('noteReader').hidden=true;
+  document.body.classList.remove('reader-open');
+  $n('notesList').hidden=false;
+  $n('notesListHeader')?.classList.remove('hidden');
+  $n('notesList').scrollIntoView({behavior:'smooth',block:'start'});
+}
+$n('backToNotes').addEventListener('click',closeNoteReader);
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape' && !$n('noteReader').hidden) closeNoteReader();
+});
 $n('readerEditNote').addEventListener('click',()=>{if(!isOwner||!currentReaderNoteId)return notify('Login pemilik diperlukan.');editNote(currentReaderNoteId);});
 $n('readerDeleteNote').addEventListener('click',()=>{if(!currentReaderNoteId)return;deleteNote(currentReaderNoteId);});
 $n('readerBibliographyJump').addEventListener('click',()=>{$n('readerBibliography').scrollIntoView({behavior:'smooth',block:'start'});});
@@ -664,90 +675,11 @@ async function openFilePreview(ref){const url=ref.file_path?await documentUrl(re
 async function removeReference(id,path){if(!isOwner)return notify('Login pemilik diperlukan.');if(!confirm('Hapus dokumen ini dari daftar referensi?'))return;const {error}=await supabase.from('academic_references').delete().eq('id',id);if(error)return notify('Dokumen gagal dihapus: '+error.message);if(path){const {error:storageError}=await supabase.storage.from('academic-documents').remove([path]);if(storageError)console.warn('File Storage belum terhapus:',storageError.message);}await loadNoteReferences();notify('Dokumen dihapus dari referensi.');}
 $n('noteReferencesList').addEventListener('click',async e=>{const preview=e.target.closest('[data-preview-file]');if(preview){const {data,error}=await supabase.from('academic_references').select('title,file_path,external_url').eq('id',preview.dataset.previewFile).single();if(error)return notify('Dokumen tidak dapat dibuka.');await openFilePreview(data);return;}const menu=e.target.closest('[data-document-menu]');if(menu){const panel=document.querySelector(`[data-document-menu-panel="${menu.dataset.documentMenu}"]`);document.querySelectorAll('.document-more-menu').forEach(x=>{if(x!==panel)x.hidden=true;});panel.hidden=!panel.hidden;menu.setAttribute('aria-expanded',String(!panel.hidden));return;}const edit=e.target.closest('[data-edit-reference]');if(edit){await startReferenceEdit(edit.dataset.editReference);return;}const del=e.target.closest('[data-remove-reference]');if(del){await removeReference(del.dataset.removeReference,del.dataset.filePath);return;}});
 
-// ===== DAFTAR ISI GLOBAL: DIBUKA MELALUI MENU TITIK TIGA =====
-async function loadGlobalToc(){
-  const owner=document.body.classList.contains('owner-mode');
-  const setToc=(html)=>{const modalList=$('globalTocList');const dashboardList=$('dashboardGlobalTocList');if(modalList)modalList.innerHTML=html;if(dashboardList)dashboardList.innerHTML=html;};
-  setToc('<p class="subject-loading">Memuat daftar materi...</p>');
-  let subjectQuery=supabase.from('subjects').select('id,title,is_public').order('title',{ascending:true});
-  if(!owner)subjectQuery=subjectQuery.eq('is_public',true);
-  const {data:subjects,error:subjectError}=await subjectQuery;
-  if(subjectError){setToc('<p class="subject-loading">Daftar mata kuliah belum dapat dimuat.</p>');console.warn(subjectError);return;}
-  if(!subjects?.length){setToc('<p class="subject-loading">Belum ada mata kuliah.</p>');return;}
-  const {data:allNotes,error}=await supabase.from('notes').select('id,title,content_html,subject_id,status,published_at,created_at').order('created_at',{ascending:true});
-  if(error){setToc('<p class="subject-loading">Daftar materi belum dapat dimuat.</p>');console.warn(error);return;}
-  const visibleNotes=(allNotes||[]).filter(n=>owner||n.status==='published');
-  const groups=subjects.map(subject=>({subject,notes:visibleNotes.filter(n=>n.subject_id===subject.id)})).filter(g=>g.notes.length);
-  if(!groups.length){setToc('<p class="subject-loading">Belum ada judul materi yang dapat ditampilkan.</p>');return;}
-  let html='';
-  for(const group of groups){
-    html+=`<section class="global-toc-group"><h4>${escapeHtml(group.subject.title)}</h4><ul>`;
-    for(const n of group.notes){
-      html+=`<li class="global-toc-item" data-material-search="${escapeHtml((group.subject.title+' '+(n.title||'Tanpa judul')).toLocaleLowerCase('id'))}"><span class="global-toc-item-title">${escapeHtml(n.title||'Tanpa judul')}</span>${owner&&n.status==='draft'?'<span class="global-draft-label">DRAFT</span>':''}<button type="button" class="global-toc-open" data-global-note="${n.id}" data-global-subject="${group.subject.id}" aria-label="Buka catatan ${escapeHtml(n.title||'Tanpa judul')}">Buka Catatan ↗</button></li>`;
-    }
-    html+='</ul></section>';
-  }
-  setToc(html);
-  if(materialSearch){materialSearch.value='';materialSearch.dispatchEvent(new Event('input'));}
-}
-async function showGlobalToc(){
-  const dashboardMenu=$('dashboardMenu');if(dashboardMenu)dashboardMenu.hidden=true;
-  await loadGlobalToc();
-  if(document.body.dataset.view==='workspace')showDashboard();
-  $('dashboardGlobalToc')?.scrollIntoView({behavior:'smooth',block:'start'});
-}
-function handleGlobalTocClick(e){const b=e.target.closest('[data-global-note]');if(!b)return;openSubject(b.dataset.globalSubject,b.dataset.globalNote);}
-$('globalTocList')?.addEventListener('click',handleGlobalTocClick);
-$('dashboardGlobalTocList')?.addEventListener('click',handleGlobalTocClick);
-// Pencarian global memfilter judul materi pada dashboard secara langsung.
-const materialSearch=$('globalMaterialSearch');
-materialSearch?.addEventListener('input',()=>{
-  const query=materialSearch.value.trim().toLocaleLowerCase('id');
-  const lists=[$('dashboardGlobalTocList'),$('globalTocList')].filter(Boolean);
-  lists.forEach(list=>{
-    list.querySelectorAll('.global-toc-group').forEach(group=>{
-      let visible=0;
-      group.querySelectorAll('.global-toc-item').forEach(item=>{
-        const match=!query||(item.dataset.materialSearch||item.textContent).toLocaleLowerCase('id').includes(query);
-        item.hidden=!match;
-        if(match)visible++;
-      });
-      group.hidden=visible===0;
-    });
-    let empty=list.querySelector('.global-toc-search-empty');
-    const any=[...list.querySelectorAll('.global-toc-group')].some(group=>!group.hidden);
-    if(query&&!any){if(!empty){empty=document.createElement('p');empty.className='global-toc-search-empty';empty.textContent='Materi tidak ditemukan.';list.append(empty);}}
-    else empty?.remove();
-  });
-});
-// Enter atau klik ikon akan membuka materi pertama yang paling sesuai.
-async function openMaterialSearchResult(){
-  const query=(materialSearch?.value||'').trim().toLocaleLowerCase('id');
-  if(!query){materialSearch?.focus();return;}
-  const currentQuery=query;
-  await loadGlobalToc();
-  if(materialSearch)materialSearch.value=currentQuery;
-  materialSearch?.dispatchEvent(new Event('input'));
-  const items=[...$('dashboardGlobalTocList').querySelectorAll('.global-toc-item')];
-  const matches=items.filter(item=>(item.dataset.materialSearch||'').includes(currentQuery));
-  if(!matches.length){notify('Materi tidak ditemukan. Coba kata kunci lain.');materialSearch?.focus();return;}
-  const best=matches.find(item=>{
-    const title=item.querySelector('.global-toc-note')?.textContent?.trim().toLocaleLowerCase('id')||'';
-    return title===currentQuery||title.startsWith(currentQuery);
-  })||matches[0];
-  const button=best.querySelector('[data-global-note]');
-  if(button)openSubject(button.dataset.globalSubject,button.dataset.globalNote);
-}
-materialSearch?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();openMaterialSearchResult();}});
-$('globalMaterialSearchButton')?.addEventListener('click',openMaterialSearchResult);
-
 // Menu titik tiga: navigasi dan akses pemilik/pengunjung.
 function toggleMenu(buttonId,menuId){const button=$(buttonId),menu=$(menuId);button.addEventListener('click',()=>{menu.hidden=!menu.hidden;button.setAttribute('aria-expanded',String(!menu.hidden));});}
 toggleMenu('dashboardMenuButton','dashboardMenu');
-$('dashboardMenu').addEventListener('click',async e=>{const action=e.target.closest('[data-dashboard-action]')?.dataset.dashboardAction;if(!action)return;$('dashboardMenu').hidden=true;if(action==='home')showDashboard();if(action==='toc')await showGlobalToc();});
+$('dashboardMenu').addEventListener('click',async e=>{const action=e.target.closest('[data-dashboard-action]')?.dataset.dashboardAction;if(!action)return;$('dashboardMenu').hidden=true;if(action==='home')showDashboard();});
 document.addEventListener('click',e=>{if(!e.target.closest('.workspace-menu-wrap')){['dashboardMenu'].forEach(id=>{const m=$(id);if(m)m.hidden=true;});['dashboardMenuButton'].forEach(id=>{const b=$(id);if(b)b.setAttribute('aria-expanded','false');});}if(!e.target.closest('.document-more-wrap'))document.querySelectorAll('.document-more-menu').forEach(m=>m.hidden=true);});
-$('closeGlobalToc')?.addEventListener('click',()=>$('globalTocModal').hidden=true);
-$('globalTocModal')?.addEventListener('click',e=>{if(e.target===$('globalTocModal'))$('globalTocModal').hidden=true;});
 $n('closeFilePreview').addEventListener('click',()=>$n('filePreviewModal').hidden=true);
 $n('filePreviewModal').addEventListener('click',e=>{if(e.target===$n('filePreviewModal'))$n('filePreviewModal').hidden=true;});
 $n('refFile').addEventListener('change',e=>{$n('refFileSelection').textContent=e.target.files[0]?`${e.target.files[0].name} · ${fileSizeLabel(e.target.files[0].size)}`:'Belum ada file dipilih.';});
@@ -789,6 +721,5 @@ window.addEventListener('popstate',restoreRoute);
 await verifyOwner();
 await loadPublicProfile();
 await loadSubjects();
-await loadGlobalToc();
 restoreRoute();
 
