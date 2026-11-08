@@ -1848,47 +1848,110 @@ body[data-page="dashboard"] a:focus-visible {
     }
 }
 
+/* Reader navigation: tombol kembali tetap terlihat tanpa menimpa isi catatan. */
+.note-reader .reader-topline{
+  position:sticky;
+  top:0;
+  z-index:10;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:64px;
+  box-sizing:border-box;
+  margin:0 0 24px;
+  padding:10px 0 12px;
+  background:#f5f2ea;
+  border-bottom:1px solid #e2dfd6;
+}
+.note-reader .reader-close{
+  position:static;
+  display:inline-grid;
+  place-items:center;
+  flex:0 0 42px;
+  width:42px;
+  height:42px;
+  margin:0;
+  line-height:1;
+}
+.note-reader .reader-modal-heading,
+.note-reader .reader-meeting,
+.note-reader .reader-quick-links,
+.note-reader .reader-cover,
+.note-reader .reader-body,
+.note-reader .reader-bibliography,
+.note-reader .reader-toc-card{
+  position:relative;
+  z-index:1;
+}
+@media(max-width:600px){
+  .note-reader .reader-topline{
+    min-height:60px;
+    margin:0 0 20px;
+    padding:8px 0 10px;
+  }
+}
 
-/* ===== AUTOMATIC SOFT MOTION — DASHBOARD ONLY ===== */
-@keyframes anGentleBob {
-    0%, 100% { translate: 0 0; }
-    50% { translate: 0 -5px; }
+/* Reader header: pertahankan tombol X bulat seperti desain sebelumnya, hilangkan garis horizontal panjang. */
+.note-reader .reader-topline{
+  border-bottom:0;
 }
-@keyframes anPhotoBreath {
-    0%, 100% { scale: 1; }
-    50% { scale: 1.025; }
+.note-reader .reader-close,
+.note-reader .reader-close:hover,
+.note-reader .reader-close:focus,
+.note-reader .reader-close:active{
+  border:1px solid #d8d6cb;
+  border-radius:50%;
+  background:#fffefa;
+  box-shadow:0 2px 8px rgba(38,60,51,.08);
+  color:#263c33;
 }
-@keyframes anCardGlow {
-    0%, 100% { box-shadow: 0 8px 24px rgba(38,60,51,.035); }
-    50% { box-shadow: 0 13px 30px rgba(38,60,51,.085); }
-}
-
-/* Gerakan kecil yang berjalan otomatis, tanpa perlu hover atau klik. */
-body[data-page="dashboard"] .profile-card {
-    animation: anFadeUp .7s both, anGentleBob 6s ease-in-out 1s infinite;
-}
-body[data-page="dashboard"] .profile-photo {
-    animation: anPhotoIn .8s both, anPhotoBreath 5s ease-in-out 1.2s infinite;
-    transform-origin: center;
-}
-body[data-page="dashboard"] .subject-card {
-    animation:
-        anFadeUp .65s both,
-        anCardGlow 7s ease-in-out 1.4s infinite;
-}
-body[data-page="dashboard"] .subject-card:nth-child(2n) {
-    animation-delay: .16s, 2.2s;
-}
-body[data-page="dashboard"] .subject-card:nth-child(3n) {
-    animation-delay: .24s, 3s;
+.note-reader .reader-close:hover{
+  background:#e9eee7;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    body[data-page="dashboard"] .profile-card,
-    body[data-page="dashboard"] .profile-photo,
-    body[data-page="dashboard"] .subject-card {
-        animation: none !important;
-        translate: none !important;
-        scale: none !important;
-    }
+/* Final reader close-button placement: align the original round X with the panel's top inner margin. */
+.note-reader .reader-topline{
+  position:sticky;
+  top:0;
+  z-index:20;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  min-height:42px;
+  margin:0 0 22px;
+  padding:0;
+  border:0;
+  background:#f5f2ea;
+  box-sizing:border-box;
+}
+.note-reader .reader-close{
+  position:relative;
+  inset:auto;
+  order:2;
+  flex:0 0 42px;
+  width:42px;
+  height:42px;
+  margin:0;
+  padding:0;
+  display:grid;
+  place-items:center;
+  border:1px solid #d8d6cb;
+  border-radius:50%;
+  background:#fffefa;
+  color:#263c33;
+  box-shadow:0 2px 8px rgba(38,60,51,.08);
+  line-height:1;
+}
+.note-reader .reader-close:hover,
+.note-reader .reader-close:focus,
+.note-reader .reader-close:active{
+  background:#e9eee7;
+}
+.note-reader .reader-owner-actions{order:1;min-width:0}
+@media(max-width:600px){
+  .note-reader .reader-topline{
+    min-height:42px;
+    margin-bottom:18px;
+    padding:0;
+  }
 }
